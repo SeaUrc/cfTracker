@@ -1,9 +1,9 @@
 const fs = require('fs');
 
-async function getAllUsers(activeOnly, includeRetired){
+async function getAllUsers(activeOnly, includeRetired) {
     let url = `https://codeforces.com/api/user.ratedList?activeOnly=${activeOnly}&includeRetired=${includeRetired}`;
     const res = await fetch(url);
-    if (!res.ok){
+    if (!res.ok) {
         throw new Error("failed to fetch all users")
     }
     const data = await res.json();
@@ -15,49 +15,98 @@ async function getAllUsers(activeOnly, includeRetired){
     return userNames;
 }
 
-async function getUserRatingHistory(userName){
+async function getUserRatingHistory(userName) {
     let url = `https://codeforces.com/api/user.rating?handle=${userName}`;
     const res = await fetch(url);
-    return res.json().result;
+    const js = await res.json();
+    return js.result;
 }
 
-async function getUserSubmissions(userName){
+async function getUserSubmissions(userName) {
     let url = `https://codeforces.com/api/user.status?handle=${userName}`
     const res = await fetch(url);
-    return res.json().result;
+    const js = await res.json();
+    return js.result;
 }
 
-async function saveAllUsers(){
-    const userNames = await getAllUsers(true, false);
+async function saveAllUsers() {
+    return new Promise(async (resolve, reject) => {
+        const userNames = await getAllUsers(true, false);
+
+        fs.writeFile('userNames.json', JSON.stringify(userNames), (err) => {
+            if (err) {
+                console.error("err writing to file");
+                reject(err);
+            }
+            resolve();
+        })
+    })
     
-    fs.writeFile('userNames.json', JSON.stringify(userNames), (err) => {
-        if (err){
-            console.error("err writing to file");
-        }
+}
+
+function saveJSON(name, jsonFile) {
+    return new Promise((resolve, reject) => {
+        fs.writeFile(`${name}.json`, JSON.stringify(jsonFile), (err) => {
+            if (err) {
+                console.error('err writing to file');
+                reject(err);
+            }
+            resolve();
+        })
+    })
+   
+}
+
+async function loadJSON(name) {
+    return new Promise((resolve, reject) => {
+        fs.readFile(`${name}.json`, 'utf8', (err, jsonString) => {
+            if (err) {
+                console.log('Error reading file', err);
+                return;
+            }
+            try {
+                // Parse JSON string to JavaScript object
+                const data = JSON.parse(jsonString);
+                //   console.log(data);
+                resolve(data);
+            } catch (err) {
+                console.log('Error parsing JSON string', err);
+                reject(err)
+            }
+        });
     })
 }
 
-function loadAllUsers(){
-    fs.readFile('userNames.json', 'utf8', (err, data)=>{
-        if (err){
-            console.error('err reading file');
-        }else{
-            console.log(data);
-            // const arr = JSON.parse(data);
-            // return arr.slice(0, 10);
-        }
+async function loadAllUsers() {
+    return new Promise((resolve, reject) => {
+        fs.readFile('userNames.json', 'utf8', (err, jsonString) => {
+            if (err) {
+                console.log('Error reading file', err);
+                return;
+            }
+            try {
+                // Parse JSON string to JavaScript object
+                const data = JSON.parse(jsonString);
+                //   console.log(data);
+                resolve(data);
+            } catch (err) {
+                console.log('Error parsing JSON string', err);
+                reject(err);
+            }
+        });
     })
+    
 }
 
 // saveAllUsers();
 // console.log(loadAllUsers())
 
-async function getAllRatingHistory(){
+async function getAllRatingHistory() {
     const userNames = await getAllUsers(true, false);
     const promiseRatingHist = userNames.map(username => {
         getUserRatingHistory(username);
     })
-    
+
     const allRatingHistories = await Promise.all(promiseRatingHist);
     console.log(allRatingHistories.slice(0, 10));
     return allRatingHistories;
@@ -65,12 +114,12 @@ async function getAllRatingHistory(){
 
 // getAllRatingHistory()
 
-const ratingBands = 
-{  
+const ratingBands =
+{
     "Newbie": [0, 999],
     "Pupil": [1000, 1199],
     "Apprentice": [1200, 1399],
-    "Specialist": [1400-1599],
+    "Specialist": [1400 - 1599],
     "Expert": [1600, 1799],
     "Candidate Master": [1800, 1999],
     "Master": [2000, 2199],
@@ -82,6 +131,10 @@ const ratingBands =
 
 async function compute(){
     const ratingvprobs = [];
+    const users = loadAllUsers();
+    users.forEach((user) => {
+
+    })
 
     getAllUsers().then(async (userNames)=>{
        userNames.forEach(async (user) => {
@@ -101,17 +154,58 @@ async function compute(){
         })
 
         const allSubmissions = awaitPromise.all(promises);
-        
-        
+
+
     })
-    
+
 }
 
+// getUserRatingHistory('tourist').then((res) => {
+//     console.log(res);
+//     saveJSON('testingRatingHist', res)
+// });
 
-
-
-
-
-// const ratingHistPromise = userNames.map(userName => {
-//     getUserRatingHistory(userName);
+// getUserSubmissions('jiangly').then((res) => {
+//     // console.log(res);
+//     saveJSON('testingSubmissionHist', res);
 // })
+
+
+// loadJSON('testingSubmissionHist').then((probs) => {
+//     // console.log(probs);
+//     // Object.keys(probs).forEach((key) => {
+//     //     if (key == "rating"){
+//     //         console.log(probs[key]);
+//     //     }
+//     // })
+//     let uniqueProbs = new Set();
+//     probs.forEach((sub) => {
+//         console.log(sub)
+//         let problem = sub["problem"]
+//         // console.log(problem);
+//         if (sub['verdict']=="OK" && !uniqueProbs.has(problem)){
+//             uniqueProbs.add(problem);
+//             // console.log(sub[""])
+//         }
+//     })
+//     console.log(uniqueProbs.size);
+// });
+
+async function getUserSolvedProb(user){
+    let subs = await getUserSubmissions(user);
+    let uniqueProbs = new Set();
+    subs.forEach((sub) => {
+        // console.log(sub);
+        let problem = `${sub["problem"]["contestId"]}${sub["problem"]["index"]}`;
+        // console.log(sub['testset']);
+        if (sub['verdict']=="OK" && !uniqueProbs.has(problem)){
+            uniqueProbs.add(problem);
+            // console.log(sub[""])
+        }
+    })
+    return uniqueProbs.size;
+}
+
+getUserSolvedProb("SeaUrc").then((sz) => {
+    console.log(sz);
+})
