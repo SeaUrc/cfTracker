@@ -101,16 +101,16 @@ async function loadAllUsers() {
 // saveAllUsers();
 // console.log(loadAllUsers())
 
-async function getAllRatingHistory() {
-    const userNames = await getAllUsers(true, false);
-    const promiseRatingHist = userNames.map(username => {
-        getUserRatingHistory(username);
-    })
+// async function getAllRatingHistory() {
+//     const userNames = await getAllUsers(true, false);
+//     const promiseRatingHist = userNames.map(username => {
+//         getUserRatingHistory(username);
+//     })
 
-    const allRatingHistories = await Promise.all(promiseRatingHist);
-    console.log(allRatingHistories.slice(0, 10));
-    return allRatingHistories;
-}
+//     const allRatingHistories = await Promise.all(promiseRatingHist);
+//     console.log(allRatingHistories.slice(0, 10));
+//     return allRatingHistories;
+// }
 
 // getAllRatingHistory()
 
@@ -129,67 +129,36 @@ const ratingBands =
     "Legendary Grandmaster": [3000, 10000]
 }
 
-async function compute(){
-    const ratingvprobs = [];
-    const users = loadAllUsers();
-    users.forEach((user) => {
+// async function compute(){
+//     const ratingvprobs = [];
+//     const users = loadAllUsers();
+//     users.forEach((user) => {
 
-    })
-
-    getAllUsers().then(async (userNames)=>{
-       userNames.forEach(async (user) => {
-
-            console.log("fetching", user)
-            const ratingHist = JSON.parse(getUserRatingHistory(user));
-            const currrating = ratingHist[ratingHist.length-1].newRating;
-            const submissionHist = JSON.parse(getUserSubmissions(user));
-            let uniqueProbs = new Set();
-            submissionHist.forEach((sub) => {
-                if (!uniqueProbs.has(sub)){
-                    uniqueProbs.add(sub);
-                }
-            })
-            const currProblems = uniqueProbs.size;
-            ratingvprobs.push([currrating, currProblems]);
-        })
-
-        const allSubmissions = awaitPromise.all(promises);
-
-
-    })
-
-}
-
-// getUserRatingHistory('tourist').then((res) => {
-//     console.log(res);
-//     saveJSON('testingRatingHist', res)
-// });
-
-// getUserSubmissions('jiangly').then((res) => {
-//     // console.log(res);
-//     saveJSON('testingSubmissionHist', res);
-// })
-
-
-// loadJSON('testingSubmissionHist').then((probs) => {
-//     // console.log(probs);
-//     // Object.keys(probs).forEach((key) => {
-//     //     if (key == "rating"){
-//     //         console.log(probs[key]);
-//     //     }
-//     // })
-//     let uniqueProbs = new Set();
-//     probs.forEach((sub) => {
-//         console.log(sub)
-//         let problem = sub["problem"]
-//         // console.log(problem);
-//         if (sub['verdict']=="OK" && !uniqueProbs.has(problem)){
-//             uniqueProbs.add(problem);
-//             // console.log(sub[""])
-//         }
 //     })
-//     console.log(uniqueProbs.size);
-// });
+
+//     getAllUsers().then(async (userNames)=>{
+//        userNames.forEach(async (user) => {
+
+//             console.log("fetching", user)
+//             const ratingHist = JSON.parse(getUserRatingHistory(user));
+//             const currrating = ratingHist[ratingHist.length-1].newRating;
+//             const submissionHist = JSON.parse(getUserSubmissions(user));
+//             let uniqueProbs = new Set();
+//             submissionHist.forEach((sub) => {
+//                 if (!uniqueProbs.has(sub)){
+//                     uniqueProbs.add(sub);
+//                 }
+//             })
+//             const currProblems = uniqueProbs.size;
+//             ratingvprobs.push([currrating, currProblems]);
+//         })
+
+//         const allSubmissions = awaitPromise.all(promises);
+
+
+//     })
+
+// }
 
 async function getUserSolvedProb(user){
     let subs = await getUserSubmissions(user);
@@ -206,6 +175,49 @@ async function getUserSolvedProb(user){
     return uniqueProbs.size;
 }
 
-getUserSolvedProb("SeaUrc").then((sz) => {
-    console.log(sz);
-})
+async function getUserCurrRating(user){
+    let ratingHist = await getUserRatingHistory(user);
+    let lastRating = await ratingHist[ratingHist.length - 1]["newRating"];
+    return lastRating;
+}
+
+async function storeAllUserSubmission(signal){
+    try{
+        const seenUsers = await loadJSON('fetchedUsersSubmission'); // [{username, rating, problems}]
+        const allUsers = await loadAllUsers();
+        const userRatingProb = await loadJSON('userRatingProblems');
+        console.log(seenUsers);
+        let seen = new Set();
+        seenUsers.forEach((seenUser) => {
+            seen.add(seenUser["username"]);
+        })
+    
+        
+        allUsers.forEach(async (user) => {
+            if (signal.aborted){
+                throw new Error("Abort!");
+            }
+            if (!seen.has(user)){
+                let numSolved = await getUserSolvedProb(user);
+                let rating = await getUserCurrRating(user);
+                userRatingProb.push({
+                    username: user,
+                    rating: rating,
+                    problems: numSolved
+                })
+            }
+        })
+    
+        saveJSON('userRatingProblems', userRatingProb);
+    }catch (err) {
+        if (err.message === "Abort!"){
+            console.log("Cleaning");
+            saveJSON('userRatingProblems', userRatingProb);
+        }else{
+            console.error("FAILED", err);
+        }
+    }
+   
+}
+
+// getAllUsers()
