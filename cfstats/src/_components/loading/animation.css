@@ -1,32 +1,32 @@
 /* HTML: <div class="loader"></div> */
 .loader {
-    width: 40px;
-    height: 30px;
-    --c:no-repeat linear-gradient(#fff 0 0);
-    background:
-      var(--c) 0    100%/8px 30px,
-      var(--c) 50%  100%/8px 20px,
-      var(--c) 100% 100%/8px 10px;
-    position: relative;
-    clip-path: inset(-100% 0);
-  }
-  .loader:before{
-    content: "";
-    position: absolute;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #fff;
-    left: -16px;
-    top: 0;
-    animation: 
-      l5-1 2s   linear infinite,
-      l5-2 0.5s cubic-bezier(0,200,.8,200) infinite;
-  }
-  @keyframes l5-1 {
-    0%   {left:-16px;transform:translateY(-8px)}
-    100% {left:calc(100% + 8px);transform:translateY(22px)}
-  }
-  @keyframes l5-2 {
-    100% {top:-0.1px}
-  }
+  width: 240px; /* Increased width */
+  height: 180px; /* Increased height */
+  --c:no-repeat linear-gradient(#fff 0 0);
+  background:
+    var(--c) 0    100%/48px 180px,   /* Increased size */
+    var(--c) 50%  100%/48px 120px,   /* Increased size */
+    var(--c) 100% 100%/48px 60px;   /* Increased size */
+  position: relative;
+  clip-path: inset(-100% 0);
+}
+.loader:before{
+  content: "";
+  position: absolute;
+  width: 48px; /* Increased size */
+  height: 48px; /* Increased size */
+  border-radius: 50%;
+  background: #fff;
+  left: -96px; /* Adjusted starting position */
+  top: 0;
+  animation: 
+    l5-1 2s   linear infinite,
+    l5-2 0.5s cubic-bezier(0,200,.8,200) infinite;
+}
+@keyframes l5-1 {
+  0%   {left:-96px;transform:translateY(-48px)} /* Adjusted for larger size */
+  100% {left:calc(100% + 48px);transform:translateY(132px)} /* Adjusted for larger size */
+}
+@keyframes l5-2 {
+  100% {top:-0.6px} /* Slightly adjusted to match the bigger size */
+}
