@@ -41,7 +41,7 @@ async function saveAllUsers() {
             resolve();
         })
     })
-    
+
 }
 
 function saveJSON(name, jsonFile) {
@@ -54,7 +54,7 @@ function saveJSON(name, jsonFile) {
             resolve();
         })
     })
-   
+
 }
 
 async function loadJSON(name) {
@@ -95,7 +95,7 @@ async function loadAllUsers() {
             }
         });
     })
-    
+
 }
 
 // saveAllUsers();
@@ -160,14 +160,14 @@ const ratingBands =
 
 // }
 
-async function getUserSolvedProb(user){
+async function getUserSolvedProb(user) {
     let subs = await getUserSubmissions(user);
     let uniqueProbs = new Set();
     subs.forEach((sub) => {
         // console.log(sub);
         let problem = `${sub["problem"]["contestId"]}${sub["problem"]["index"]}`;
         // console.log(sub['testset']);
-        if (sub['verdict']=="OK" && !uniqueProbs.has(problem)){
+        if (sub['verdict'] == "OK" && !uniqueProbs.has(problem)) {
             uniqueProbs.add(problem);
             // console.log(sub[""])
         }
@@ -175,49 +175,75 @@ async function getUserSolvedProb(user){
     return uniqueProbs.size;
 }
 
-async function getUserCurrRating(user){
+async function getUserCurrRating(user) {
     let ratingHist = await getUserRatingHistory(user);
     let lastRating = await ratingHist[ratingHist.length - 1]["newRating"];
     return lastRating;
 }
 
-async function storeAllUserSubmission(signal){
-    try{
-        const seenUsers = await loadJSON('fetchedUsersSubmission'); // [{username, rating, problems}]
-        const allUsers = await loadAllUsers();
-        const userRatingProb = await loadJSON('userRatingProblems');
-        console.log(seenUsers);
+async function storeAllUserSubmission(signal) {
+    const seenUsers = await loadJSON('fetchedUsersSubmission'); // [{username, rating, problems}]
+    const allUsers = await loadAllUsers();
+    const userRatingProb = await loadJSON('userRatingProblems');
+    console.log("Loaded seen users, all users, and user ratings & problems");
+
+    try {
         let seen = new Set();
-        seenUsers.forEach((seenUser) => {
-            seen.add(seenUser["username"]);
+        seenUsers.forEach((user) => {
+            // console.log(user);
+            seen.add(user);
         })
-    
-        
-        allUsers.forEach(async (user) => {
-            if (signal.aborted){
+
+        for (const user of allUsers) {
+            if (signal.aborted) {
                 throw new Error("Abort!");
             }
-            if (!seen.has(user)){
+
+            if (!seen.has(user)) {
                 let numSolved = await getUserSolvedProb(user);
                 let rating = await getUserCurrRating(user);
                 userRatingProb.push({
                     username: user,
                     rating: rating,
                     problems: numSolved
-                })
+                });
+                seen.add(user);
+                console.log("collected ", user);
+                seenUsers.push(user);
             }
-        })
-    
-        saveJSON('userRatingProblems', userRatingProb);
-    }catch (err) {
-        if (err.message === "Abort!"){
+        }
+
+        await saveJSON('userRatingProblems', userRatingProb);
+        await saveJSON('fetchedUsersSubmission', seenUsers);
+        console.log("SAVED!");
+    } catch (err) {
+        if (err.message === "Abort!") {
             console.log("Cleaning");
-            saveJSON('userRatingProblems', userRatingProb);
-        }else{
+            await saveJSON('userRatingProblems', userRatingProb);
+            await saveJSON('fetchedUsersSubmission', seenUsers);
+            console.log("SAVED!");
+        } else {
             console.error("FAILED", err);
         }
     }
-   
 }
 
-// getAllUsers()
+const controller = new AbortController();
+
+process.stdin.setEncoding('utf8');
+process.stdin.on('readable', () => {
+    var chunk = process.stdin.read();
+    if (chunk !== null) {
+        if (chunk.trim() === "q") {
+            controller.abort();
+            console.log("Bruh");
+        }
+        process.stdout.write(`data: ${chunk}`);
+    }
+});
+
+storeAllUserSubmission(controller.signal);
+// loadJSON('fetchedUsersSubmission').then((users) => {
+//     console.log(users);
+    
+// })

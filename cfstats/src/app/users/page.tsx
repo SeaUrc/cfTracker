@@ -1,6 +1,9 @@
+import NavBar from "~/components/navbar/navbar"
 
 export default function UsersPage(){
     return (
-        <div></div>
+        <div>
+             <NavBar page="users"/>
+        </div>
     )
 }

@@ -1,6 +1,6 @@
 import "~/styles/globals.css";
 
-import { ThemeProvider } from "~/_components/theme-provider"
+import { ThemeProvider } from "~/components/theme-provider"
 
 
 import { GeistSans } from "geist/font/sans";

@@ -1,8 +1,8 @@
 'use client'
 
-import NavBar from "~/_components/navbar/navbar";
+import NavBar from "~/components/navbar/navbar";
 import { CornerDownRight } from 'lucide-react';
-import '../_components/loading/animation.css';
+import '../components/loading/animation.css';
 
 export default function HomePage() {
 
@@ -28,9 +28,9 @@ export default function HomePage() {
   // }
 
   return (
-    <main className="px-20">
-      <NavBar />
-      <div className="flex flex-row">
+    <main className="">
+      <NavBar page="home"/>
+      <div className="flex flex-row px-20">
         <div>
           <h1 className="text-5xl w-7/12 pt-32">
             Explore detailed analysis about Codeforces

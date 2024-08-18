@@ -1,6 +1,9 @@
+import NavBar from "~/components/navbar/navbar"
 
 export default function ContestPage(){
     return (
-        <div></div>
+        <div>
+            <NavBar page="contests"/>
+        </div>
     )
 }
