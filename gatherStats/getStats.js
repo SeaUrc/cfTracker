@@ -16,10 +16,18 @@ async function getAllUsers(activeOnly, includeRetired) {
 }
 
 async function getUserRatingHistory(userName) {
+    
     let url = `https://codeforces.com/api/user.rating?handle=${userName}`;
-    const res = await fetch(url);
-    const js = await res.json();
-    return js.result;
+    try{
+        const res = await fetch(url);
+        const js = await res.json();
+        return js.result;
+    }catch(err){
+        const res = await (await fetch(url)).json();
+        console.log(res);
+        console.error(err);
+    }
+    
 }
 
 async function getUserSubmissions(userName) {
@@ -175,18 +183,106 @@ async function getUserSolvedProb(user) {
     return uniqueProbs.size;
 }
 
-async function getUserCurrRating(user) {
+async function getUserCurrRatingAndContests(user) {
     let ratingHist = await getUserRatingHistory(user);
     let lastRating = await ratingHist[ratingHist.length - 1]["newRating"];
-    return lastRating;
+    let numContests = await ratingHist.length;
+    return [lastRating, numContests];
 }
 
-async function storeAllUserSubmission(signal) {
+// async function storeAllUserSubmission(signal) {
+//     const seenUsers = await loadJSON('fetchedUsersSubmission'); // [{username, rating, problems}]
+//     const allUsers = await loadAllUsers();
+//     const userRatingProb = await loadJSON('userRatingProblems');
+//     console.log("Loaded seen users, all users, and user ratings & problems");
+
+//     const saveStuff = async () => {
+//         await saveJSON('userRatingProblems', userRatingProb);
+//         await saveJSON('fetchedUsersSubmission', seenUsers);
+//     }
+
+//     let lastSaved = Date.now();
+//     try {
+//         let seen = new Set();
+//         seenUsers.forEach((user) => {
+//             // console.log(user);
+//             seen.add(user);
+//         })
+
+//         for (const user of allUsers) {
+//             if (signal.aborted) {
+//                 throw new Error("Abort!");
+//             }
+
+//             if (!seen.has(user)) {
+//                 let numSolved = await getUserSolvedProb(user);
+//                 let rating = await getUserCurrRating(user);
+//                 userRatingProb.push({
+//                     username: user,
+//                     rating: rating,
+//                     problems: numSolved
+//                 });
+//                 seen.add(user);
+//                 console.log("collected ", user);
+//                 seenUsers.push(user);
+//             }
+//             if (Date.now() - lastSaved > 120000){
+//                 await saveStuff();
+//                 console.log("SAVED!");
+//                 lastSaved = Date.now();
+//             }
+//         }
+
+        
+//         console.log("SAVED!");
+//         await saveStuff()
+//     } catch (err) {
+//         if (err.message === "Abort!") {
+//             console.log("Cleaning");
+//             await saveStuff();
+//             console.log("SAVED!");
+//         } else {
+//             console.error("FAILED", err);
+//         }
+//     }
+// }
+
+// const controller = new AbortController();
+
+// process.stdin.setEncoding('utf8');
+// process.stdin.on('readable', () => {
+//     var chunk = process.stdin.read();
+//     if (chunk !== null) {
+//         if (chunk.trim() === "q") {
+//             controller.abort();
+//             console.log("Bruh");
+//         }
+//         process.stdout.write(`data: ${chunk}`);
+//     }
+// });
+
+
+
+// // loadJSON('fetchedUsersSubmission').then((users) => {
+// //     console.log(users);
+    
+// // })
+// storeAllUserSubmission(controller.signal);
+
+
+
+async function storeAllUserSubmissionAndContest(signal) {
     const seenUsers = await loadJSON('fetchedUsersSubmission'); // [{username, rating, problems}]
     const allUsers = await loadAllUsers();
-    const userRatingProb = await loadJSON('userRatingProblems');
+    const userRatingProb = await loadJSON('userRatingProblemsContests');
     console.log("Loaded seen users, all users, and user ratings & problems");
 
+    const saveStuff = async () => {
+        await saveJSON('userRatingProblemsContests', userRatingProb);
+        await saveJSON('fetchedUsersSubmission', seenUsers);
+    }
+
+    let lastSaved = Date.now();
     try {
         let seen = new Set();
         seenUsers.forEach((user) => {
@@ -201,26 +297,33 @@ async function storeAllUserSubmission(signal) {
 
             if (!seen.has(user)) {
                 let numSolved = await getUserSolvedProb(user);
-                let rating = await getUserCurrRating(user);
+                console.log("get num solved")
+                let [rating, contestNum] = await getUserCurrRatingAndContests(user);
+                console.log("get rating and contests");
                 userRatingProb.push({
                     username: user,
                     rating: rating,
-                    problems: numSolved
+                    problems: numSolved,
+                    numContests: contestNum
                 });
                 seen.add(user);
                 console.log("collected ", user);
                 seenUsers.push(user);
             }
+            if (Date.now() - lastSaved > 120000){
+                await saveStuff();
+                console.log("SAVED!");
+                lastSaved = Date.now();
+            }
         }
 
-        await saveJSON('userRatingProblems', userRatingProb);
-        await saveJSON('fetchedUsersSubmission', seenUsers);
+        
         console.log("SAVED!");
+        await saveStuff()
     } catch (err) {
         if (err.message === "Abort!") {
             console.log("Cleaning");
-            await saveJSON('userRatingProblems', userRatingProb);
-            await saveJSON('fetchedUsersSubmission', seenUsers);
+            await saveStuff();
             console.log("SAVED!");
         } else {
             console.error("FAILED", err);
@@ -242,8 +345,25 @@ process.stdin.on('readable', () => {
     }
 });
 
-storeAllUserSubmission(controller.signal);
-// loadJSON('fetchedUsersSubmission').then((users) => {
-//     console.log(users);
-    
-// })
+storeAllUserSubmissionAndContest(controller.signal);
+
+
+async function computeDistribution(bucketSize){
+    const MAXRATING = 4000;
+    let numberPerBucket = Array.from(Array(Math.ceil(MAXRATING/bucketSize)), () => 0); // [ 0->bucketSize, bucketSize->2*bucketSize, . . . ];
+    // for (let i = 0; i<=MAXRATING; i+=bucketSize){
+        
+    // }
+    const userRatingProbCont = await loadJSON('userRatingProblemsContests');
+    userRatingProbCont.forEach((user) => {
+        let bucketNumber = Math.floor(user.rating / bucketSize);
+        numberPerBucket[bucketNumber]++;
+        // console.log(user);
+    })
+
+    let dist = {
+        bucketSize: bucketSize,
+        distribution: numberPerBucket
+    };
+    saveJSON(dist, "jsonStats/ratingDistribution");
+}

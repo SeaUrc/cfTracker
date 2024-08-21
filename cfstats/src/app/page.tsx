@@ -3,6 +3,7 @@
 import NavBar from "~/components/navbar/navbar";
 import { CornerDownRight } from 'lucide-react';
 import '../components/loading/animation.css';
+import Link from "next/link";
 
 export default function HomePage() {
 
@@ -29,7 +30,7 @@ export default function HomePage() {
 
   return (
     <main className="">
-      <NavBar page="home"/>
+      <NavBar page="home" />
       <div className="flex flex-row px-20">
         <div>
           <h1 className="text-5xl w-7/12 pt-32">
@@ -43,25 +44,31 @@ export default function HomePage() {
               <CornerDownRight
                 className="mx-2 my-1"
               />
-              <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
-                Trends in submissions
-              </div>
+              <Link href="/submissions">
+                <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
+                  Trends in submissions
+                </div>
+              </Link>
             </li>
             <li className="pb-5 flex flex-row items-center">
               <CornerDownRight
                 className="mx-2 my-1"
               />
-              <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
-                Trends in contests
-              </div>
+              <Link href="/contests">
+                <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
+                  Trends in contests
+                </div>
+              </Link>
             </li>
             <li className="flex flex-row">
               <CornerDownRight
                 className="mx-2 my-1"
               />
-              <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
-                Trends in users
-              </div>
+              <Link href="/users">
+                <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
+                  Trends in users
+                </div>
+              </Link>
             </li>
           </ul>
         </div>
