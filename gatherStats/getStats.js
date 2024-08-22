@@ -16,25 +16,28 @@ async function getAllUsers(activeOnly, includeRetired) {
 }
 
 async function getUserRatingHistory(userName) {
-    
+
     let url = `https://codeforces.com/api/user.rating?handle=${userName}`;
-    try{
+    try {
         const res = await fetch(url);
         const js = await res.json();
         return js.result;
-    }catch(err){
-        const res = await (await fetch(url)).json();
-        console.log(res);
+    } catch (err) {
         console.error(err);
     }
-    
+
 }
 
 async function getUserSubmissions(userName) {
     let url = `https://codeforces.com/api/user.status?handle=${userName}`
-    const res = await fetch(url);
-    const js = await res.json();
-    return js.result;
+    try {
+        const res = await fetch(url);
+        const js = await res.json();
+        return js.result;
+    } catch (err) {
+        console.error(err);
+    }
+
 }
 
 async function saveAllUsers() {
@@ -233,7 +236,7 @@ async function getUserCurrRatingAndContests(user) {
 //             }
 //         }
 
-        
+
 //         console.log("SAVED!");
 //         await saveStuff()
 //     } catch (err) {
@@ -265,7 +268,7 @@ async function getUserCurrRatingAndContests(user) {
 
 // // loadJSON('fetchedUsersSubmission').then((users) => {
 // //     console.log(users);
-    
+
 // // })
 // storeAllUserSubmission(controller.signal);
 
@@ -295,6 +298,8 @@ async function storeAllUserSubmissionAndContest(signal) {
                 throw new Error("Abort!");
             }
 
+            // setTimeout(() => {}, 1000);
+
             if (!seen.has(user)) {
                 let numSolved = await getUserSolvedProb(user);
                 console.log("get num solved")
@@ -310,14 +315,14 @@ async function storeAllUserSubmissionAndContest(signal) {
                 console.log("collected ", user);
                 seenUsers.push(user);
             }
-            if (Date.now() - lastSaved > 120000){
+            if (Date.now() - lastSaved > 120000) {
                 await saveStuff();
                 console.log("SAVED!");
                 lastSaved = Date.now();
             }
         }
 
-        
+
         console.log("SAVED!");
         await saveStuff()
     } catch (err) {
@@ -348,11 +353,11 @@ process.stdin.on('readable', () => {
 storeAllUserSubmissionAndContest(controller.signal);
 
 
-async function computeDistribution(bucketSize){
+async function computeDistribution(bucketSize) {
     const MAXRATING = 4000;
-    let numberPerBucket = Array.from(Array(Math.ceil(MAXRATING/bucketSize)), () => 0); // [ 0->bucketSize, bucketSize->2*bucketSize, . . . ];
+    let numberPerBucket = Array.from(Array(Math.ceil(MAXRATING / bucketSize)), () => 0); // [ 0->bucketSize, bucketSize->2*bucketSize, . . . ];
     // for (let i = 0; i<=MAXRATING; i+=bucketSize){
-        
+
     // }
     const userRatingProbCont = await loadJSON('userRatingProblemsContests');
     userRatingProbCont.forEach((user) => {
@@ -366,4 +371,46 @@ async function computeDistribution(bucketSize){
         distribution: numberPerBucket
     };
     saveJSON(dist, "jsonStats/ratingDistribution");
+}
+
+function getTitle(rating) {
+    for (const [type, range] of Object.entries(ratingBands)) {
+        const [min, max] = range;
+        if (rating >= min && rating <= max) {
+            return type;
+        }
+    }
+    return null;
+}
+
+
+async function computeProbSolveTInterval() {
+    // use statlib
+    let tInterval = (x, y) => { return [0, 0] } // tmp func
+    const userRatingProbCont = await loadJSON('userRatingProblemsContests');
+
+    let data = {
+        "Newbie": [],
+        "Pupil": [],
+        "Apprentice": [],
+        "Specialist": [],
+        "Expert": [],
+        "Candidate Master": [],
+        "Master": [],
+        "International Master": [],
+        "Grandmaster": [],
+        "International Grandmaster": [],
+        "Legendary Grandmaster": []
+    }
+
+    userRatingProbCont.forEach((user) => {
+        let title = getTitle(user.rating);
+        data[title].push(user.problems);
+    })
+
+    const confidence = 0.95
+    for (const [title, d] of Object.entries(data)) {
+        data[title] = tInterval(d, confidence);
+    }
+    return data;
 }
