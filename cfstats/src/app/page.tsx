@@ -33,7 +33,7 @@ export default function HomePage() {
       <NavBar page="home" />
       <div className="flex flex-row px-20">
         <div>
-          <h1 className="text-5xl w-7/12 pt-32">
+          <h1 className="text-5xl w-7/12 pt-32 font-medium">
             Explore detailed analysis about Codeforces
           </h1>
           <h2 className="text-4xl pt-12">
