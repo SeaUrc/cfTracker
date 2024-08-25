@@ -130,7 +130,7 @@ const ratingBands =
     "Newbie": [0, 999],
     "Pupil": [1000, 1199],
     "Apprentice": [1200, 1399],
-    "Specialist": [1400 - 1599],
+    "Specialist": [1400, 1599],
     "Expert": [1600, 1799],
     "Candidate Master": [1800, 1999],
     "Master": [2000, 2199],
@@ -352,65 +352,3 @@ process.stdin.on('readable', () => {
 
 storeAllUserSubmissionAndContest(controller.signal);
 
-
-async function computeDistribution(bucketSize) {
-    const MAXRATING = 4000;
-    let numberPerBucket = Array.from(Array(Math.ceil(MAXRATING / bucketSize)), () => 0); // [ 0->bucketSize, bucketSize->2*bucketSize, . . . ];
-    // for (let i = 0; i<=MAXRATING; i+=bucketSize){
-
-    // }
-    const userRatingProbCont = await loadJSON('userRatingProblemsContests');
-    userRatingProbCont.forEach((user) => {
-        let bucketNumber = Math.floor(user.rating / bucketSize);
-        numberPerBucket[bucketNumber]++;
-        // console.log(user);
-    })
-
-    let dist = {
-        bucketSize: bucketSize,
-        distribution: numberPerBucket
-    };
-    saveJSON(dist, "jsonStats/ratingDistribution");
-}
-
-function getTitle(rating) {
-    for (const [type, range] of Object.entries(ratingBands)) {
-        const [min, max] = range;
-        if (rating >= min && rating <= max) {
-            return type;
-        }
-    }
-    return null;
-}
-
-
-async function computeProbSolveTInterval() {
-    // use statlib
-    let tInterval = (x, y) => { return [0, 0] } // tmp func
-    const userRatingProbCont = await loadJSON('userRatingProblemsContests');
-
-    let data = {
-        "Newbie": [],
-        "Pupil": [],
-        "Apprentice": [],
-        "Specialist": [],
-        "Expert": [],
-        "Candidate Master": [],
-        "Master": [],
-        "International Master": [],
-        "Grandmaster": [],
-        "International Grandmaster": [],
-        "Legendary Grandmaster": []
-    }
-
-    userRatingProbCont.forEach((user) => {
-        let title = getTitle(user.rating);
-        data[title].push(user.problems);
-    })
-
-    const confidence = 0.95
-    for (const [title, d] of Object.entries(data)) {
-        data[title] = tInterval(d, confidence);
-    }
-    return data;
-}
