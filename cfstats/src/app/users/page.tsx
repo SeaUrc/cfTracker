@@ -2,6 +2,7 @@
 
 import SampleChart from "~/components/charts/sampleChart"
 import NavBar from "~/components/navbar/navbar"
+import RatingDistributionChart from "~/components/charts/userRatingDistributionChart"
 
 export default function UsersPage() {
     return (
@@ -18,7 +19,7 @@ export default function UsersPage() {
                         true average number of problems solved for a given title lies within the bars.
                     </div>
                     <div className="flex w-1/2 mt-16">
-                        <SampleChart />
+                        <RatingDistributionChart />
                     </div>
                 </div>
                 <div className="flex flex-row w-full justify-between">
