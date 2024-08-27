@@ -59,14 +59,22 @@ async function computeDistribution(bucketSize) {
 
     // }
     const userRatingProbCont = await loadJSON('userRatingProblemsContests');
+    let ratings = []
     userRatingProbCont.forEach((user) => {
-        let bucketNumber = Math.floor(user.rating / bucketSize);
-        numberPerBucket[bucketNumber]++;
+        if (user.rating) {
+            ratings.push(user.rating);
+            let bucketNumber = Math.floor(user.rating / bucketSize);
+            numberPerBucket[bucketNumber]++;
+        }
         // console.log(user);
     })
 
     let dist = {
         bucketSize: bucketSize,
+        mean: statlib.mean(ratings),
+        stdDev: statlib.populationStd(ratings),
+        median: statlib.median(ratings),
+        skew: statlib.skewness(ratings),
         distribution: numberPerBucket
     };
     saveJSON("jsonStats/ratingDistribution", dist);
@@ -104,8 +112,11 @@ async function computeProbSolveTInterval() {
 
 
     userRatingProbCont.forEach((user) => {
-        let title = getTitle(user.rating, ratingBands);
-        data[title].push(user.problems);
+        if (user.rating && user.problems) {
+            let title = getTitle(user.rating, ratingBands);
+            data[title].push(user.problems);
+        }
+
     })
 
     const confidence = 0.95
@@ -116,14 +127,16 @@ async function computeProbSolveTInterval() {
     saveJSON('jsonStats/problemSolvedTInterval', data);
 }
 
-async function computeProbSolveLinRegTInterval(){
+async function computeProbSolveLinRegTInterval() {
     // let linRegTInt = (x, y, conf) => { return [0, 0] } // tmp func
     const userRatingProbCont = await loadJSON('userRatingProblemsContests');
     let x = [];
     let y = [];
     userRatingProbCont.forEach((user) => {
-        y.push(user.rating);
-        x.push(user.problems);
+        if (user.rating && user.problems) {
+            y.push(user.rating);
+            x.push(user.problems);
+        }
     })
 
     const confidence = 0.95;
@@ -136,6 +149,6 @@ async function computeProbSolveLinRegTInterval(){
     // const [[slopeUp, slopeLow], [interceptUp, interceptDown]] = 
 }
 
-computeDistribution(50).then(() => {console.log("DONE DISTRIBUTION!")});
-computeProbSolveTInterval().then(() => {console.log("DONE T INTERVAL!")})
-computeProbSolveLinRegTInterval().then(() => {console.log("DONE LIN REG!")})
+computeDistribution(50).then(() => { console.log("DONE DISTRIBUTION!") });
+computeProbSolveTInterval().then(() => { console.log("DONE T INTERVAL!") })
+computeProbSolveLinRegTInterval().then(() => { console.log("DONE LIN REG!") })

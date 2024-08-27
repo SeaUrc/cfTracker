@@ -188,7 +188,13 @@ async function getUserSolvedProb(user) {
 
 async function getUserCurrRatingAndContests(user) {
     let ratingHist = await getUserRatingHistory(user);
-    let lastRating = await ratingHist[ratingHist.length - 1]["newRating"];
+    let lastRating;
+    try{
+        lastRating = await ratingHist[ratingHist.length - 1]["newRating"];
+    }catch(e){
+        console.log(ratingHist);
+        console.error(e);
+    }
     let numContests = await ratingHist.length;
     return [lastRating, numContests];
 }

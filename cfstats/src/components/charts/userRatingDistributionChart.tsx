@@ -1,3 +1,5 @@
+'use client'
+
 import { Bar, BarChart, CartesianGrid, ErrorBar, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -17,8 +19,9 @@ interface ChartDataItem {
 
 
 const RatingDistributionChart = () => {
-
-    const { bucketSize, distribution } = data;
+    // const { bucketSize, mean, median, stdDev, skew, distribution } = data;
+    const bucketSize = data["bucketSize"];
+    const distribution = data["distribution"];
 
     const chartData: ChartDataItem[] = distribution.map((value, index) => ({
         rating: `${(index) * bucketSize}`,
@@ -30,7 +33,7 @@ const RatingDistributionChart = () => {
     return (
         <Card className="w-full max-w-3xl mx-auto">
             <CardHeader>
-                <CardTitle>Distribution Chart</CardTitle>
+                <CardTitle>Distribution Rating For Non-Retired Users</CardTitle>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={{}} >
@@ -46,12 +49,12 @@ const RatingDistributionChart = () => {
                             content={<ChartTooltipContent
                                 className="w-12"
                                 nameKey="bucket"
-                                labelFormatter={(val) => {
+                                labelFormatter={(val: any) => {
                                    return `${val} -  ${Number(val)+bucketSize}`
                                 }}
                             />}
                         />
-                        <Bar dataKey="count" fill="#8884d8" />
+                        <Bar dataKey="count" fill="hsl(var(--codeforceBlue))" />
                     </BarChart>
                 </ChartContainer>
             </CardContent>
