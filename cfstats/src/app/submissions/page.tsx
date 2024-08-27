@@ -6,8 +6,8 @@ import { Bar, BarChart, CartesianGrid, ErrorBar, Line, LineChart, Tooltip, XAxis
 
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "~/components/ui/chart"
 
+import SubmissionsPerTitleChart from "~/components/charts/submissionsPerTitleChart"
 import SampleChart from "~/components/charts/sampleChart"
-
 
 export default function SubmissionPage() {
 
@@ -25,7 +25,7 @@ export default function SubmissionPage() {
             true average number of problems solved for a given title lies within the bars.
           </div>
           <div className="flex w-1/2 mt-16">
-            <SampleChart />
+            <SubmissionsPerTitleChart />
           </div>
         </div>
         <div className="flex flex-row w-full justify-between">
