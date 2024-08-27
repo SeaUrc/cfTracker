@@ -7,6 +7,7 @@ import { Bar, BarChart, CartesianGrid, ErrorBar, Line, LineChart, Tooltip, XAxis
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLegendContent } from "~/components/ui/chart"
 
 import SubmissionsPerTitleChart from "~/components/charts/submissionsPerTitleChart"
+import LinearRegressionChart from "~/components/charts/linearRegressionChart"
 import SampleChart from "~/components/charts/sampleChart"
 
 export default function SubmissionPage() {
@@ -30,7 +31,7 @@ export default function SubmissionPage() {
         </div>
         <div className="flex flex-row w-full justify-between">
           <div className="flex w-1/2 mt-16">
-            <SampleChart />
+            <LinearRegressionChart />
           </div>
           <div className="flex w-1/3 items-center text-lg">
             Average number of problems solved to be have a certain title. Theres an positive, expotential realtionship between problems
