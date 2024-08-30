@@ -18,18 +18,18 @@ export default function UsersPage() {
         <div>
             <NavBar page="users" />
             <div className="px-20 w-full">
-                <h1 className="text-5xl font-medium">
+                <h1 className="text-5xl font-medium mt-10">
                     Trends in Users
                 </h1>
                 <div className="flex flex-row w-full justify-between">
                     <div className="flex w-1/3 items-center text-lg">
                         <div>
-                            The rating distribution of non-retired users (online in the past month) is skewed right with a mean of <span className="text-codeforceRed">{data.mean.toPrecision(5)}</span>,
+                            The rating distribution of users is heavily skewed right with a mean of <span className="text-codeforceRed">{data.mean.toPrecision(5)}</span>,
                             median of <span className="text-codeforceRed">{data.median.toPrecision(5)}</span>, standard deviation of <span className="text-codeforceRed">{data.stdDev.toPrecision(5)}</span>,
-                            and skewness of <span className="text-codeforceRed">{data.skew.toPrecision(5)}</span>.
+                            and skewness of <span className="text-codeforceRed">{data.skew.toPrecision(5)}</span>. To check what percentile you lie within, scroll down!
                         </div>
                     </div>
-                    <div className="flex w-1/2 mt-16">
+                    <div className="flex w-1/2 mt-8">
                         <RatingDistributionChart/>
                         {/* <Carousel>
                             <CarouselContent>

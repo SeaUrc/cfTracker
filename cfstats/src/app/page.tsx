@@ -39,42 +39,48 @@ export default function HomePage() {
           <h2 className="text-4xl pt-12">
             Get Started
           </h2>
-          <ul className="text-xl pt-8">
-            <li className="pb-5 flex flex-row">
-              <CornerDownRight
-                className="mx-2 my-1"
-              />
-              <Link href="/submissions">
-                <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
-                  Trends in submissions
-                </div>
-              </Link>
-            </li>
-            <li className="pb-5 flex flex-row items-center">
-              <CornerDownRight
-                className="mx-2 my-1"
-              />
-              <Link href="/contests">
-                <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
-                  Trends in contests
-                </div>
-              </Link>
-            </li>
-            <li className="flex flex-row">
-              <CornerDownRight
-                className="mx-2 my-1"
-              />
-              <Link href="/users">
-                <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
-                  Trends in users
-                </div>
-              </Link>
-            </li>
-          </ul>
+          <div className="flex flex-col justify-between h-[50vh]">
+            <div>
+              <ul className="text-xl pt-8">
+                <li className="pb-5 flex flex-row">
+                  <CornerDownRight
+                    className="mx-2 my-1"
+                  />
+                  <Link href="/submissions">
+                    <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
+                      Trends in submissions
+                    </div>
+                  </Link>
+                </li>
+                <li className="pb-5 flex flex-row items-center">
+                  <CornerDownRight
+                    className="mx-2 my-1"
+                  />
+                  <Link href="/contests">
+                    <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
+                      Trends in contests
+                    </div>
+                  </Link>
+                </li>
+                <li className="flex flex-row">
+                  <CornerDownRight
+                    className="mx-2 my-1"
+                  />
+                  <Link href="/users">
+                    <div className="hover:bg-gray-500 transition-all duration-300 ease-out px-2 py-1 rounded-md">
+                      Trends in users
+                    </div>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="text-xs mb-3">
+              Last updated: August 31st, 2024. Only collects stats on non-retired users.
+            </div>
+          </div>
         </div>
         <div>
           <div className="loader mt-80">
-
           </div>
         </div>
       </div>

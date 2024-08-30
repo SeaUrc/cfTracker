@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-async function getAllUsers(activeOnly, includeRetired) {
+async function getAllUsers(activeOnly, includeRetired) { // (participated in rated contest in last month, active online in last month)
     let url = `https://codeforces.com/api/user.ratedList?activeOnly=${activeOnly}&includeRetired=${includeRetired}`;
     const res = await fetch(url);
     if (!res.ok) {
@@ -18,32 +18,24 @@ async function getAllUsers(activeOnly, includeRetired) {
 async function getUserRatingHistory(userName) {
 
     let url = `https://codeforces.com/api/user.rating?handle=${userName}`;
-    try {
-        const res = await fetch(url);
-        const js = await res.json();
-        return js.result;
-    } catch (err) {
-        console.error(err);
-    }
+    const res = await fetch(url);
+    const js = await res.json();
+    return js.result;
 
 }
 
 async function getUserSubmissions(userName) {
     let url = `https://codeforces.com/api/user.status?handle=${userName}`
-    try {
-        const res = await fetch(url);
-        const js = await res.json();
-        return js.result;
-    } catch (err) {
-        console.error(err);
-    }
+    const res = await fetch(url);
+    const js = await res.json();
+    return js.result;
 
 }
 
 async function saveAllUsers() {
     return new Promise(async (resolve, reject) => {
         const userNames = await getAllUsers(true, false);
-
+        console.log("GOT USERNAMES, WRITING", userNames[0]);
         fs.writeFile('userNames.json', JSON.stringify(userNames), (err) => {
             if (err) {
                 console.error("err writing to file");
@@ -109,21 +101,6 @@ async function loadAllUsers() {
 
 }
 
-// saveAllUsers();
-// console.log(loadAllUsers())
-
-// async function getAllRatingHistory() {
-//     const userNames = await getAllUsers(true, false);
-//     const promiseRatingHist = userNames.map(username => {
-//         getUserRatingHistory(username);
-//     })
-
-//     const allRatingHistories = await Promise.all(promiseRatingHist);
-//     console.log(allRatingHistories.slice(0, 10));
-//     return allRatingHistories;
-// }
-
-// getAllRatingHistory()
 
 const ratingBands =
 {
@@ -140,58 +117,32 @@ const ratingBands =
     "Legendary Grandmaster": [3000, 10000]
 }
 
-// async function compute(){
-//     const ratingvprobs = [];
-//     const users = loadAllUsers();
-//     users.forEach((user) => {
-
-//     })
-
-//     getAllUsers().then(async (userNames)=>{
-//        userNames.forEach(async (user) => {
-
-//             console.log("fetching", user)
-//             const ratingHist = JSON.parse(getUserRatingHistory(user));
-//             const currrating = ratingHist[ratingHist.length-1].newRating;
-//             const submissionHist = JSON.parse(getUserSubmissions(user));
-//             let uniqueProbs = new Set();
-//             submissionHist.forEach((sub) => {
-//                 if (!uniqueProbs.has(sub)){
-//                     uniqueProbs.add(sub);
-//                 }
-//             })
-//             const currProblems = uniqueProbs.size;
-//             ratingvprobs.push([currrating, currProblems]);
-//         })
-
-//         const allSubmissions = awaitPromise.all(promises);
-
-
-//     })
-
-// }
-
 async function getUserSolvedProb(user) {
     let subs = await getUserSubmissions(user);
     let uniqueProbs = new Set();
-    subs.forEach((sub) => {
-        // console.log(sub);
-        let problem = `${sub["problem"]["contestId"]}${sub["problem"]["index"]}`;
-        // console.log(sub['testset']);
-        if (sub['verdict'] == "OK" && !uniqueProbs.has(problem)) {
-            uniqueProbs.add(problem);
-            // console.log(sub[""])
-        }
-    })
-    return uniqueProbs.size;
+    if (subs) {
+        subs.forEach((sub) => {
+            // console.log(sub);
+            let problem = `${sub["problem"]["contestId"]}${sub["problem"]["index"]}`;
+            // console.log(sub['testset']);
+            if (sub['verdict'] == "OK" && !uniqueProbs.has(problem)) {
+                uniqueProbs.add(problem);
+                // console.log(sub[""])
+            }
+        })
+        return uniqueProbs.size;
+    }
+
+    console.error('FAIlED RETREIVAL OF SUBSMISSIONS FOR USER ', user);
+    return -1;
 }
 
 async function getUserCurrRatingAndContests(user) {
     let ratingHist = await getUserRatingHistory(user);
     let lastRating;
-    try{
+    try {
         lastRating = await ratingHist[ratingHist.length - 1]["newRating"];
-    }catch(e){
+    } catch (e) {
         console.log(ratingHist);
         console.error(e);
     }
@@ -199,84 +150,7 @@ async function getUserCurrRatingAndContests(user) {
     return [lastRating, numContests];
 }
 
-// async function storeAllUserSubmission(signal) {
-//     const seenUsers = await loadJSON('fetchedUsersSubmission'); // [{username, rating, problems}]
-//     const allUsers = await loadAllUsers();
-//     const userRatingProb = await loadJSON('userRatingProblems');
-//     console.log("Loaded seen users, all users, and user ratings & problems");
 
-//     const saveStuff = async () => {
-//         await saveJSON('userRatingProblems', userRatingProb);
-//         await saveJSON('fetchedUsersSubmission', seenUsers);
-//     }
-
-//     let lastSaved = Date.now();
-//     try {
-//         let seen = new Set();
-//         seenUsers.forEach((user) => {
-//             // console.log(user);
-//             seen.add(user);
-//         })
-
-//         for (const user of allUsers) {
-//             if (signal.aborted) {
-//                 throw new Error("Abort!");
-//             }
-
-//             if (!seen.has(user)) {
-//                 let numSolved = await getUserSolvedProb(user);
-//                 let rating = await getUserCurrRating(user);
-//                 userRatingProb.push({
-//                     username: user,
-//                     rating: rating,
-//                     problems: numSolved
-//                 });
-//                 seen.add(user);
-//                 console.log("collected ", user);
-//                 seenUsers.push(user);
-//             }
-//             if (Date.now() - lastSaved > 120000){
-//                 await saveStuff();
-//                 console.log("SAVED!");
-//                 lastSaved = Date.now();
-//             }
-//         }
-
-
-//         console.log("SAVED!");
-//         await saveStuff()
-//     } catch (err) {
-//         if (err.message === "Abort!") {
-//             console.log("Cleaning");
-//             await saveStuff();
-//             console.log("SAVED!");
-//         } else {
-//             console.error("FAILED", err);
-//         }
-//     }
-// }
-
-// const controller = new AbortController();
-
-// process.stdin.setEncoding('utf8');
-// process.stdin.on('readable', () => {
-//     var chunk = process.stdin.read();
-//     if (chunk !== null) {
-//         if (chunk.trim() === "q") {
-//             controller.abort();
-//             console.log("Bruh");
-//         }
-//         process.stdout.write(`data: ${chunk}`);
-//     }
-// });
-
-
-
-// // loadJSON('fetchedUsersSubmission').then((users) => {
-// //     console.log(users);
-
-// // })
-// storeAllUserSubmission(controller.signal);
 
 
 
@@ -308,9 +182,13 @@ async function storeAllUserSubmissionAndContest(signal) {
 
             if (!seen.has(user)) {
                 let numSolved = await getUserSolvedProb(user);
-                console.log("get num solved")
+                if (numSolved == -1) {
+                    console.log(`SKIPPED ${user}`);
+                    continue;
+                }
+                // console.log("get num solved")
                 let [rating, contestNum] = await getUserCurrRatingAndContests(user);
-                console.log("get rating and contests");
+                // console.log("get rating and contests");
                 userRatingProb.push({
                     username: user,
                     rating: rating,
@@ -318,7 +196,8 @@ async function storeAllUserSubmissionAndContest(signal) {
                     numContests: contestNum
                 });
                 seen.add(user);
-                console.log("collected ", user);
+                // console.log("collected ", user);
+                console.log(user);
                 seenUsers.push(user);
             }
             if (Date.now() - lastSaved > 120000) {
@@ -332,12 +211,14 @@ async function storeAllUserSubmissionAndContest(signal) {
         console.log("SAVED!");
         await saveStuff()
     } catch (err) {
+        
         if (err.message === "Abort!") {
-            console.log("Cleaning");
+            console.log("Cleaning");    
             await saveStuff();
             console.log("SAVED!");
         } else {
-            console.error("FAILED", err);
+            // console.error("FAILED", err);
+            throw new Error("IDK");
         }
     }
 }
@@ -350,11 +231,38 @@ process.stdin.on('readable', () => {
     if (chunk !== null) {
         if (chunk.trim() === "q") {
             controller.abort();
-            console.log("Bruh");
+            console.log("Abort signal received");
         }
         process.stdout.write(`data: ${chunk}`);
     }
 });
 
-storeAllUserSubmissionAndContest(controller.signal);
+async function runWithRetry() {
+    let cnt = 0;
+    while (true) {
+        console.log(`RERUN ${cnt}`);
+        try {
+            await storeAllUserSubmissionAndContest(controller.signal);
+            break;
+        } catch (err) {
+            console.error("Failed to run storeAllUserSubmissionAndContest, retrying in 5 minutes...", err);
+            await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+        }
+        cnt++;
+    }
+}
 
+// let json = []
+
+// saveAllUsers().then(() => {
+//     console.log("done");
+//     saveJSON('userRatingProblemsContests', json).then(() => {
+//         console.log("saved userratingproblemscontests");
+//         saveJSON('fetchedUsersSubmission', json).then(() => {
+//             console.log("saved fetchedUserSubmissions");
+//         })
+//     })
+// })
+
+
+runWithRetry();

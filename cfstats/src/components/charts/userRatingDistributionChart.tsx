@@ -33,7 +33,7 @@ const RatingDistributionChart = () => {
     return (
         <Card className="w-full max-w-3xl mx-auto">
             <CardHeader>
-                <CardTitle>Distribution Rating For Non-Retired Users</CardTitle>
+                <CardTitle>Distribution Rating</CardTitle>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={{}} >

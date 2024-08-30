@@ -1,9 +1,9 @@
 import React from 'react';
 import { Bar, BarChart, CartesianGrid, ErrorBar, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import data from '../../../../jsonStats/problemSolvedTInterval.json'
+import data from '../../../../jsonStats/contestsTInterval.json'
 
-const SubmissionsPerTitleChart = () => {
+const ContestsPerTitleChart = () => {
     const chartData = Object.keys(data).map((key) => {
         const [min, max] = data[key as keyof typeof data];
         if (min && max) {
@@ -35,7 +35,7 @@ const SubmissionsPerTitleChart = () => {
     return (
         <Card className="w-full max-w-3xl">
             <CardHeader>
-                <CardTitle>Average Number of Solved Problems</CardTitle>
+                <CardTitle>Average Number of Contests</CardTitle>
             </CardHeader>
             <CardContent className="h-[500px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -64,4 +64,4 @@ const SubmissionsPerTitleChart = () => {
     );
 };
 
-export default SubmissionsPerTitleChart;
+export default ContestsPerTitleChart;

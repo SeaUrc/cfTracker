@@ -5,7 +5,7 @@ const fs = require('fs');
 
 const ratingBands =
 {
-    "Newbie": [0, 999],
+    "Newbie": [-100000, 999],
     "Pupil": [1000, 1199],
     "Apprentice": [1200, 1399],
     "Specialist": [1400, 1599],
@@ -91,7 +91,7 @@ function getTitle(rating, ratingBands) {
 }
 
 
-async function computeProbSolveTInterval() {
+async function computeProbSolveTInterval(conf) {
     // use statlib
     // let tInterval = (x, y) => { return [0, 0] } // tmp func
     const userRatingProbCont = await loadJSON('userRatingProblemsContests');
@@ -119,15 +119,15 @@ async function computeProbSolveTInterval() {
 
     })
 
-    const confidence = 0.95
+    // const confidence = 0.95
     for (const [title, d] of Object.entries(data)) {
-        data[title] = statlib.tInterval(d, confidence);
+        data[title] = statlib.tInterval(d, conf);
     }
     // return data;
     saveJSON('jsonStats/problemSolvedTInterval', data);
 }
 
-async function computeProbSolveLinRegTInterval() {
+async function computeProbSolveLinRegTInterval(conf, numDataPoints) {
     // let linRegTInt = (x, y, conf) => { return [0, 0] } // tmp func
     const userRatingProbCont = await loadJSON('userRatingProblemsContests');
     let x = [];
@@ -138,17 +138,103 @@ async function computeProbSolveLinRegTInterval() {
             x.push(user.problems);
         }
     })
+    
+    let combined = x.map((val, ind) => ([val, y[ind]]))
+    
+    function getRandomSubset(arr, size) {
+        let shuffled = arr.sort((a, b) => {a[0] < b[0]});
+        let tmp = [];
+        for (let i=0; i<shuffled.length; i+=Math.floor(shuffled.length / size + 1)){
+            tmp.push(shuffled[i]);
+        }
+        return tmp;
+    }
 
-    const confidence = 0.95;
-    let res = statlib.linRegTInterval(x, y, confidence);
+    // const confidence = 0.95;
+    let res = statlib.linRegTInterval(x, y, conf);
     let save = {
         "slope": res[0],
-        "intercept": res[1]
+        "intercept": res[1],
+        "points": getRandomSubset(combined, numDataPoints)
+
     }
     saveJSON('jsonStats/problemSolvedLinReg', save);
     // const [[slopeUp, slopeLow], [interceptUp, interceptDown]] = 
 }
 
+async function computeContestsTInterval(conf) {
+    // use statlib
+    // let tInterval = (x, y) => { return [0, 0] } // tmp func
+    const userRatingProbCont = await loadJSON('userRatingProblemsContests');
+
+    let data = {
+        "Newbie": [],
+        "Pupil": [],
+        "Apprentice": [],
+        "Specialist": [],
+        "Expert": [],
+        "Candidate Master": [],
+        "Master": [],
+        "International Master": [],
+        "Grandmaster": [],
+        "International Grandmaster": [],
+        "Legendary Grandmaster": []
+    }
+
+
+    userRatingProbCont.forEach((user) => {
+        if (user.rating && user.numContests) {
+            let title = getTitle(user.rating, ratingBands);
+            data[title].push(user.numContests);
+        }
+    })
+
+    // const confidence = 0.95
+    for (const [title, d] of Object.entries(data)) {
+        data[title] = statlib.tInterval(d, conf);
+    }
+    // return data;
+    saveJSON('jsonStats/contestsTInterval', data);
+}
+
+async function computeContestsLinRegTInterval(conf, numDataPoints) {
+    // let linRegTInt = (x, y, conf) => { return [0, 0] } // tmp func
+    const userRatingProbCont = await loadJSON('userRatingProblemsContests');
+    let x = [];
+    let y = [];
+    userRatingProbCont.forEach((user) => {
+        if (user.rating && user.numContests) {
+            y.push(user.rating);
+            x.push(user.numContests);
+        }
+    })
+
+    let combined = x.map((val, ind) => ([val, y[ind]]))
+
+    function getRandomSubset(arr, size) {
+        let shuffled = arr.sort((a, b) => {a[0] < b[0]});
+        let tmp = [];
+        for (let i=0; i<shuffled.length; i+=Math.floor(shuffled.length / size)){
+            tmp.push(shuffled[i]);
+        }
+        return tmp;
+    }
+
+    // const confidence = 0.95;
+    let res = statlib.linRegTInterval(x, y, conf);
+    let save = {
+        "slope": res[0],
+        "intercept": res[1],
+        "points": getRandomSubset(combined, numDataPoints)
+
+    }
+    saveJSON('jsonStats/contestsSolvedLinReg', save);
+    // const [[slopeUp, slopeLow], [interceptUp, interceptDown]] = 
+}
+
 computeDistribution(50).then(() => { console.log("DONE DISTRIBUTION!") });
-computeProbSolveTInterval().then(() => { console.log("DONE T INTERVAL!") })
-computeProbSolveLinRegTInterval().then(() => { console.log("DONE LIN REG!") })
+computeProbSolveTInterval(.95).then(() => { console.log("DONE T INTERVAL!") })
+computeProbSolveLinRegTInterval(.95, 70).then(() => { console.log("DONE LIN REG!") })
+computeContestsTInterval(.95).then(() => { console.log("DONE T INTERVAL!") })
+computeContestsLinRegTInterval(.95, 70).then(() => { console.log("DONE LIN REG!") })
+
