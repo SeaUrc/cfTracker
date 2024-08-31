@@ -2,10 +2,32 @@
 
 import NavBar from "~/components/navbar/navbar";
 import { CornerDownRight } from 'lucide-react';
-import '../components/loading/animation.css';
+import '../components/loading/animationLight.css';
+import '../components/loading/animationDark.css';
 import Link from "next/link";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import CfAnimation from "~/components/loading/animation";
 
 export default function HomePage() {
+
+  const { theme, setTheme, systemTheme } = useTheme()
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, [])
+
+  const getTheme = (): string | undefined => {
+    if (!mounted) {
+      return '';
+    }
+    return theme;
+  }
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <main className="">
@@ -59,8 +81,12 @@ export default function HomePage() {
           </div>
         </div>
         <div>
-          <div className="loader mt-80">
-          </div>
+          {/* {
+            getTheme() == 'light' ? <div className="loaderLight mt-80">
+            </div> : <div className="loaderDark mt-80">
+            </div>
+          } */}
+            <CfAnimation/>
         </div>
       </div>
     </main>

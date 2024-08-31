@@ -3,6 +3,8 @@ import "~/styles/globals.css";
 import { ThemeProvider } from "~/components/theme-provider"
 
 
+import { GoogleTagManager } from '@next/third-parties/google'
+
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
@@ -17,6 +19,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
+      <GoogleTagManager gtmId="G-Y7K4KJDPGZ" />
       <body>
         <ThemeProvider
           attribute="class"

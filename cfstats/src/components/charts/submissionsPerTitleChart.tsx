@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, CartesianGrid, ErrorBar, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import data from '../../../jsonStats/problemSolvedTInterval.json'
+import { useTheme } from 'next-themes';
 
 const SubmissionsPerTitleChart = () => {
+    const { theme, setTheme, systemTheme } = useTheme()
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+
+    const getTheme = (): string | undefined => {
+        if (!mounted) {
+            return '';
+        }
+        return theme;
+    }
+
+    if (!mounted) {
+        return null;
+    }
+
+
     const chartData = Object.keys(data).map((key) => {
         const [min, max] = data[key as keyof typeof data];
         if (min && max) {
@@ -21,6 +41,15 @@ const SubmissionsPerTitleChart = () => {
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
+            if (getTheme() == 'light') {
+                return (
+                    <div className="custom-tooltip bg-white p-2 rounded shadow-md">
+                        <p className="label">{`${label}`}</p>
+                        <p className="intro">{`Mean: ${data.mean.toFixed(2)}`}</p>
+                        <p className="desc">{`Error Interval: [${data.min.toFixed(2)}, ${data.max.toFixed(2)}]`}</p>
+                    </div>
+                )
+            }
             return (
                 <div className="custom-tooltip bg-black p-2 rounded shadow-md">
                     <p className="label">{`${label}`}</p>

@@ -1,11 +1,30 @@
 'use client'
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Bar, BarChart, ErrorBar, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import data from '../../../jsonStats/contestsTInterval.json'
+import { useTheme } from 'next-themes';
 
 const ContestsPerTitleChart = () => {
+    const { theme, setTheme, systemTheme } = useTheme()
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, [])
+
+    const getTheme = (): string | undefined => {
+        if (!mounted) {
+            return '';
+        }
+        return theme;
+    }
+
+    if (!mounted) {
+        return null;
+    }
+
     const chartData = Object.keys(data).map((key) => {
         const [min, max] = data[key as keyof typeof data];
         if (min && max) {
@@ -23,6 +42,15 @@ const ContestsPerTitleChart = () => {
     const CustomTooltip = ({ active, payload, label }: any) => {
         if (active && payload && payload.length) {
             const data = payload[0].payload;
+            if (getTheme() == 'light') {
+                return (
+                    <div className="custom-tooltip bg-white p-2 rounded shadow-md">
+                        <p className="">{`${label}`}</p>
+                        <p className="">{`Mean: ${data.mean.toFixed(2)}`}</p>
+                        <p className="">{`Error Interval: [${data.min.toFixed(2)}, ${data.max.toFixed(2)}]`}</p>
+                    </div>
+                )
+            }
             return (
                 <div className="custom-tooltip bg-black p-2 rounded shadow-md">
                     <p className="">{`${label}`}</p>
@@ -73,7 +101,7 @@ const LogarithmicContestsPerTitleChart = () => {
             const logmin = Math.log10(min);
             const logmax = Math.log10(max);
             const mean = (min + max) / 2;
-            const logmean = (logmin + logmax)/2;
+            const logmean = (logmin + logmax) / 2;
             return {
                 "name": key,
                 "mean": mean,
