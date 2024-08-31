@@ -25,9 +25,9 @@ const ContestsPerTitleChart = () => {
             const data = payload[0].payload;
             return (
                 <div className="custom-tooltip bg-black p-2 rounded shadow-md">
-                    <p className="label">{`${label}`}</p>
-                    <p className="intro">{`Mean: ${data.mean.toFixed(2)}`}</p>
-                    <p className="desc">{`Error Interval: [${data.min.toFixed(2)}, ${data.max.toFixed(2)}]`}</p>
+                    <p className="">{`${label}`}</p>
+                    <p className="">{`Mean: ${data.mean.toFixed(2)}`}</p>
+                    <p className="">{`Error Interval: [${data.min.toFixed(2)}, ${data.max.toFixed(2)}]`}</p>
                 </div>
             );
         }

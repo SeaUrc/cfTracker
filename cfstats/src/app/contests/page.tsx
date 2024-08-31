@@ -33,7 +33,7 @@ export default function ContestPage() {
                     </div>
                 </div>
                 <div className="flex flex-row w-full justify-between">
-                    <div className="flex w-1/2 mt-16">
+                    <div className="flex w-1/2 my-16">
                         <LinearRegressionContestsChart />
                     </div>
                     <div className="flex w-1/3 items-center text-lg">

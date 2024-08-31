@@ -47,7 +47,7 @@ const LinearRegressionProblemsChart = () => {
       <CardHeader>
         <CardTitle>Linear Regression of Problems Solved vs Rating</CardTitle>
       </CardHeader>
-      <CardContent className="h-[500px]">
+      <CardContent className="h-[450px]">
         <ResponsiveContainer width="100%" height={400}>
           <LineChart
             data={data}

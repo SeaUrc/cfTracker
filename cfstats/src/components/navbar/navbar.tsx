@@ -5,11 +5,8 @@ import Link from "next/link";
 import { ModeToggle } from "~/components/modeToggle";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import { ThemeProvider } from "~/components/theme-provider";
 import { useEffect, useState } from "react";
 import { StaticImport } from "next/dist/shared/lib/get-img-props";
-import Loading from '../loading/animation';
-// import { useTheme } from "next-themes";
 
 export default function NavBar(props: { page: string }) {
 
@@ -30,9 +27,6 @@ export default function NavBar(props: { page: string }) {
     return '/github-mark-white.svg'
   }
 
-  //   if (!mounted) {
-  //     return <Loading />;
-  //   }
   if (!mounted) {
     return null;
   }
