@@ -7,27 +7,6 @@ import Link from "next/link";
 
 export default function HomePage() {
 
-  // const { theme, setTheme, systemTheme } = useTheme()
-  // const [mounted, setMounted] = useState(false);
-
-  // useEffect(() => {
-  //   setMounted(true);
-  // }, [])
-
-  // const getTheme = (): string | StaticImport => {
-  //   if (!mounted) {
-  //     return '';
-  //   }
-  //   if (theme == 'light') {
-  //     return '/github-mark.svg';
-  //   }
-  //   return '/github-mark-white.svg'
-  // }
-
-  // if (!mounted) {
-  //   return <Loading />;
-  // }
-
   return (
     <main className="">
       <NavBar page="home" />

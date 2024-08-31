@@ -200,7 +200,7 @@ async function storeAllUserSubmissionAndContest(signal) {
                 console.log(user);
                 seenUsers.push(user);
             }
-            if (Date.now() - lastSaved > 120000) {
+            if (Date.now() - lastSaved > 60000) {
                 await saveStuff();
                 console.log("SAVED!");
                 lastSaved = Date.now();
@@ -245,8 +245,8 @@ async function runWithRetry() {
             await storeAllUserSubmissionAndContest(controller.signal);
             break;
         } catch (err) {
-            console.error("Failed to run storeAllUserSubmissionAndContest, retrying in 5 minutes...", err);
-            await new Promise(resolve => setTimeout(resolve, 5 * 60 * 1000));
+            console.error("Failed to run storeAllUserSubmissionAndContest, retrying in 7 minutes...", err);
+            await new Promise(resolve => setTimeout(resolve, 7 * 60 * 1000));
         }
         cnt++;
     }

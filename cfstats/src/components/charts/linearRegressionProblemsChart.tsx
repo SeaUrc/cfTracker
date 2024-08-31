@@ -1,22 +1,30 @@
 'use client'
 
-import { ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, ResponsiveContainer, Line, ReferenceLine, LineChart, CartesianGrid, Legend, ReferenceDot } from 'recharts';
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Line, LineChart, CartesianGrid, Legend, ReferenceDot } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import linReg from '../../../../jsonStats/problemSolvedLinReg.json'
 
 // Generate data points
-//@ts-ignore
-const generateDataPoints = (count = 100) => {
+const generateDataPoints = (count: number = 100) => {
   const data = [];
-  //@ts-ignore
-  const midSlope = (linReg.slope[0] + linReg.slope[1]) / 2;//@ts-ignore
-  const midIntercept = (linReg.intercept[0] + linReg.intercept[1]) / 2;
+
+  let midSlope, midIntercept;
+  if (linReg.slope[0] && linReg.slope[1] && linReg.intercept[0] && linReg.intercept[1]) {
+    midSlope = (linReg.slope[0] + linReg.slope[1]) / 2;
+    midIntercept = (linReg.intercept[0] + linReg.intercept[1]) / 2;
+  }
 
   for (let i = 0; i < count; i++) {
-    const x = i * 40; // Generate x values from 0 to 95
-    const y = midSlope * x + midIntercept;//@ts-ignore
-    const lowerBound = linReg.slope[0] * x + linReg.intercept[0];//@ts-ignore
-    const upperBound = linReg.slope[1] * x + linReg.intercept[1];
+    const x = i * 40;
+    let y;
+    if (midSlope && midIntercept) {
+      y = midSlope * x + midIntercept;
+    }
+    let lowerBound, upperBound;
+    if (linReg.slope[0] && linReg.slope[1] && linReg.intercept[0] && linReg.intercept[1]) {
+      lowerBound = linReg.slope[0] * x + linReg.intercept[0];
+      upperBound = linReg.slope[1] * x + linReg.intercept[1];
+    }
     data.push({ x, y, lowerBound, upperBound });
   }
   return data;
@@ -33,7 +41,6 @@ const LinearRegressionProblemsChart = () => {
       />
     );
   })
-  // console.log(references)
 
   return (
     <Card className="w-full max-w-3xl">

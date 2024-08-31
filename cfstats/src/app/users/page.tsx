@@ -1,6 +1,5 @@
 'use client'
 
-import SampleChart from "~/components/charts/sampleChart"
 import NavBar from "~/components/navbar/navbar"
 import RatingDistributionChart from "~/components/charts/userRatingDistributionChart"
 import data from '../../../../jsonStats/ratingDistribution.json'
@@ -24,34 +23,29 @@ export default function UsersPage() {
                 <div className="flex flex-row w-full justify-between">
                     <div className="flex w-1/3 items-center text-lg">
                         <div>
-                            The rating distribution of users is heavily skewed right with a mean of <span className="text-codeforceRed">{data.mean.toPrecision(5)}</span>,
+                            {/* The rating distribution of users is heavily skewed right with a mean of <span className="text-codeforceRed">{data.mean.toPrecision(5)}</span>,
                             median of <span className="text-codeforceRed">{data.median.toPrecision(5)}</span>, standard deviation of <span className="text-codeforceRed">{data.stdDev.toPrecision(5)}</span>,
                             and skewness of <span className="text-codeforceRed">{data.skew.toPrecision(5)}</span>. To check what percentile you lie within, scroll down!
+                            You may notice that theres a sudden jump of users at around ~350 rating. Many of these accounts are new ones, with only one contests.
+                            Likely these people joining codeforces that already have programming experience and do well in the first contest. */}
+                            The rating distribution of users is heavily skewed right with a mean of {data.mean.toPrecision(5)},
+                            median of {data.median.toPrecision(5)}, standard deviation of {data.stdDev.toPrecision(5)},
+                            and skewness of {data.skew.toPrecision(5)}. To check what percentile you lie within, scroll down!
+                            You may notice that theres a sudden jump of users at around ~350 rating. Many of these accounts are new ones, with only one contests.
+                            Likely these people joining codeforces that already have programming experience and do well in the first contest.
                         </div>
                     </div>
                     <div className="flex w-1/2 mt-8">
-                        <RatingDistributionChart/>
-                        {/* <Carousel>
+                        <Carousel>
                             <CarouselContent>
-                                <CarouselItem> <RatingDistributionChart /> </CarouselItem>
-                                <CarouselItem> <div> bruh </div></CarouselItem>
-                                <CarouselItem> <div> lucas </div></CarouselItem>
+                                <CarouselItem> {<RatingDistributionChart.RatingDistributionChart />} </CarouselItem>
+                                <CarouselItem> {<RatingDistributionChart.LogarithmicRatingDistributionChart />}</CarouselItem>
                             </CarouselContent>
                             <CarouselPrevious />
                             <CarouselNext />
-                        </Carousel> */}
+                        </Carousel>
                     </div>
                 </div>
-                {/* <div className="flex flex-row w-full justify-between">
-                    <div className="flex w-1/2 mt-16">
-                        <SampleChart />
-                    </div>
-                    <div className="flex w-1/3 items-center text-lg">
-                        Average number of problems solved to be have a certain title. Theres an positive, expotential realtionship between problems
-                        solved and title. The error bars show a 95% confidence interval for the true average. In other words, we can be 95% that the
-                        true average number of problems solved for a given title lies within the bars.
-                    </div>
-                </div> */}
             </div>
         </div>
     )

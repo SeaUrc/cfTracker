@@ -18,12 +18,12 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body>
-      	<ThemeProvider
-			attribute="class"
-			defaultTheme="dark"
-			enableSystem
-		>
-        	{children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+        >
+          {children}
         </ThemeProvider>
       </body>
     </html>
