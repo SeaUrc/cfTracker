@@ -2,7 +2,7 @@
 
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Line, LineChart, CartesianGrid, Legend, ReferenceDot } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import linReg from '../../../../jsonStats/contestsSolvedLinReg.json'
+import linReg from '../../../jsonStats/contestsSolvedLinReg.json'
 
 interface DataPoint {
   x: number | undefined;

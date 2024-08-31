@@ -3,7 +3,7 @@
 import { Bar, BarChart, XAxis } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "../ui/chart";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import data from '../../../../jsonStats/ratingDistribution.json'
+import data from '../../../jsonStats/ratingDistribution.json'
 
 
 interface DistributionData {

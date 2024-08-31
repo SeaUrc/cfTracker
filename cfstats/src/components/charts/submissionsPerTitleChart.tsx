@@ -1,7 +1,7 @@
 import React from 'react';
 import { Bar, BarChart, CartesianGrid, ErrorBar, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import data from '../../../../jsonStats/problemSolvedTInterval.json'
+import data from '../../../jsonStats/problemSolvedTInterval.json'
 
 const SubmissionsPerTitleChart = () => {
     const chartData = Object.keys(data).map((key) => {

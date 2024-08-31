@@ -3,7 +3,7 @@
 import React from 'react';
 import { Bar, BarChart, ErrorBar, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import data from '../../../../jsonStats/contestsTInterval.json'
+import data from '../../../jsonStats/contestsTInterval.json'
 
 const ContestsPerTitleChart = () => {
     const chartData = Object.keys(data).map((key) => {

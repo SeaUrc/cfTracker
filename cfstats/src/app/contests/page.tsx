@@ -3,7 +3,7 @@
 import ContestsPerTitleChart from "~/components/charts/contestsPerTItleChart"
 import LinearRegressionContestsChart from "~/components/charts/linearRegressionContestsChart"
 import NavBar from "~/components/navbar/navbar"
-import linReg from '../../../../jsonStats/contestsSolvedLinReg.json'
+import linReg from '../../../jsonStats/contestsSolvedLinReg.json'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "~/components/ui/carousel"
 
 

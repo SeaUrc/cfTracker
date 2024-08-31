@@ -4,7 +4,7 @@ import NavBar from "~/components/navbar/navbar"
 
 import SubmissionsPerTitleChart from "~/components/charts/submissionsPerTitleChart"
 import LinearRegressionProblemsChart from "~/components/charts/linearRegressionProblemsChart"
-import linReg from '../../../../jsonStats/problemSolvedLinReg.json'
+import linReg from '../../../jsonStats/problemSolvedLinReg.json'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "~/components/ui/carousel"
 
 

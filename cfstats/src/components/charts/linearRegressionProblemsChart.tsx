@@ -2,7 +2,7 @@
 
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Line, LineChart, CartesianGrid, Legend, ReferenceDot } from 'recharts';
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
-import linReg from '../../../../jsonStats/problemSolvedLinReg.json'
+import linReg from '../../../jsonStats/problemSolvedLinReg.json'
 
 // Generate data points
 const generateDataPoints = (count: number = 100) => {

@@ -2,7 +2,7 @@
 
 import NavBar from "~/components/navbar/navbar"
 import RatingDistributionChart from "~/components/charts/userRatingDistributionChart"
-import data from '../../../../jsonStats/ratingDistribution.json'
+import data from '../../../jsonStats/ratingDistribution.json'
 
 import {
     Carousel,

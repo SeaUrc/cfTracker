@@ -77,7 +77,7 @@ async function computeDistribution(bucketSize) {
         skew: statlib.skewness(ratings),
         distribution: numberPerBucket
     };
-    saveJSON("jsonStats/ratingDistribution", dist);
+    saveJSON("cfstats/jsonStats/ratingDistribution", dist);
 }
 
 function getTitle(rating, ratingBands) {
@@ -124,7 +124,7 @@ async function computeProbSolveTInterval(conf) {
         data[title] = statlib.tInterval(d, conf);
     }
     // return data;
-    saveJSON('jsonStats/problemSolvedTInterval', data);
+    saveJSON('cfstats/jsonStats/problemSolvedTInterval', data);
 }
 
 async function computeProbSolveLinRegTInterval(conf, numDataPoints) {
@@ -158,7 +158,7 @@ async function computeProbSolveLinRegTInterval(conf, numDataPoints) {
         "points": getRandomSubset(combined, numDataPoints)
 
     }
-    saveJSON('jsonStats/problemSolvedLinReg', save);
+    saveJSON('cfstats/jsonStats/problemSolvedLinReg', save);
     // const [[slopeUp, slopeLow], [interceptUp, interceptDown]] = 
 }
 
@@ -194,7 +194,7 @@ async function computeContestsTInterval(conf) {
         data[title] = statlib.tInterval(d, conf);
     }
     // return data;
-    saveJSON('jsonStats/contestsTInterval', data);
+    saveJSON('cfstats/jsonStats/contestsTInterval', data);
 }
 
 async function computeContestsLinRegTInterval(conf, numDataPoints) {
@@ -228,7 +228,7 @@ async function computeContestsLinRegTInterval(conf, numDataPoints) {
         "points": getRandomSubset(combined, numDataPoints)
 
     }
-    saveJSON('jsonStats/contestsSolvedLinReg', save);
+    saveJSON('cfstats/jsonStats/contestsSolvedLinReg', save);
     // const [[slopeUp, slopeLow], [interceptUp, interceptDown]] = 
 }
 
