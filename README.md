@@ -1,4 +1,4 @@
-WIP. Not yet hosted. Statstics last updated on August 31st, 2024.
+WIP. Hosted on cf-tracker-six.vercel.app temporarily. Statstics last updated on August 31st, 2024.
 
 To host locally, clone the repo and ```cd cfstats```. Run ```pnpm install``` and
  ```pnpm dev``` and open localhost::3000.
